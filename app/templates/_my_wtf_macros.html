@@ -1,0 +1,79 @@
+{% macro form_field(field,
+                    screen='xs',
+                    div_col=6,
+                    label_col=3,
+                    field_col=9,
+                    button_map={}) %}
+
+{% if field.widget.input_type == 'checkbox' %}
+<div class="form-group col-{{screen}}-{{div_col}}">
+    <div class="checkbox">
+        <label>
+            {{field()|safe}} {{field.label.text|safe}}
+        </label>
+    </div>
+</div>
+
+{% elif field.type == 'RadioField' %}
+<div class="form-group col-{{screen}}-{{div_col}} {% if field.flags.required %}required{% endif %}">
+    <div class="row">
+        {{ field.label(class="control-label col-%s-%s" %(screen, label_col))|safe }}
+        <div class="col-{{screen}}-{{field_col}}">
+            {% for item in field %}
+            <label class="control-label">
+                {{item()|safe}}
+                {{item.label.text|safe}}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% elif field.type == 'SubmitField' %}
+<div class="form-group col-{{screen}}-{{div_col}}">
+    {{field(class='btn btn-%s' % button_map.get(field.name, 'default'),
+            **field_kwargs)}}
+</div>
+
+{% elif field.type == 'FormField' %}
+<fieldset>
+    <legend>{{field.label}}</legend>
+    {% for subfield in field %}
+        {% if not bootstrap_is_hidden_field(subfield) %}
+            {{ form_field(subfield,
+                          screen=screen,
+                          div_col=div_col,
+                          label_col=label_col,
+                          field_col=field_col) }}
+        {% endif %}
+    {% endfor %}
+</fieldset>
+
+{% else %}
+<div class="form-group col-{{screen}}-{{div_col}} {% if field.errors %} has-error{% endif %}{% if field.flags.required %} required{% endif %}">
+    <div class="row">
+        {% if field.errors %}
+            {{field.label(
+                data_toggle="tooltip",
+                data_placement="top",
+                title=field.errors[0],
+                class="control-label " + (
+                " col-%s-%s" % (screen, label_col))
+            )|safe}}
+        {% else %}
+            {{field.label(class="control-label " + (
+                " col-%s-%s" % (screen, label_col))
+            )|safe}}
+        {% endif %}
+        <div class="col-{{screen}}-{{field_col}}">
+            {% if field.type == 'FileField' %}
+                {{field(**kwargs)|safe}}
+            {% else %}
+                {{field(class="form-control", **kwargs)|safe}}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endmacro %}

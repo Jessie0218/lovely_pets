@@ -2,8 +2,11 @@ import time
 import datetime
 
 from sqlalchemy import text
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 from app import db
+from app import login_manger
 
 
 def get_timestamp():
@@ -39,7 +42,7 @@ class BaseModel(db.Model):
         return datetime.datetime.fromtimestamp(self.deleted_at)
 
 
-class Adopter(BaseModel):
+class Adopter(BaseModel, UserMixin):
 
     __tablename__ = 'adopters'
 
@@ -48,6 +51,23 @@ class Adopter(BaseModel):
     mobile = db.Column(db.String(32),
                        nullable=False, default='',
                        server_default=text("'0'"))
+    password =db.Column(db.String(100), nullable=False)
+
+    @property
+    def pwd(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @pwd.setter
+    def pwd(self, password):
+        self.password = generate_password_hash(password)
+
+    def verify_pwd(self, password):
+        return check_password_hash(self.password, password)
+
+
+@login_manger.user_loader
+def load_user(user_id):
+    return Adopter.query.get(int(user_id))
 
 
 class Pet(BaseModel):

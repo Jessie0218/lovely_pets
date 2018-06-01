@@ -1,0 +1,74 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}爱宠网{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type='image/x-icon'>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type='image/x-icon'>
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/metisMenu/2.7.0/metisMenu.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+    <!--Bootstrap 3.3.7-->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/smalot-bootstrap-datetimepicker/2.4.4/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for("main.index") }}">爱宠网<img src="{{ url_for('static', filename='favicon.ico') }}"></a></li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a href="">首页</a></li>
+                <li><a href="">新闻</a></li>
+                <li><a href="">狗粮领养</a></li>
+                <li><a href="">宠物资料</a></li>
+                <li><a href="">知识百科</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <div class="cl">
+                    <table cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td class="scbar_txt_td">
+                                <input type="text" value="请输入要搜索的内容">
+                            </td>
+                            <td class="scbar_type_td">
+                                <button type="submit" name="searchsubmit" sc="1" class="pn pnc">
+                                    <strong class="xi2">搜索</strong>
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.logout') }}">退出登录</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('main.login') }}">登录</a></li>
+                    <li><a>|</a></li>
+                    <li><a href="{{ url_for('main.adopter_register') }}">注册</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endblock %}
+
